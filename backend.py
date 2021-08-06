@@ -1,10 +1,12 @@
 from flask import Flask, jsonify, request, redirect
-from matchers import K, closest_matches_rtree
+from matchers import *
+import os
 
 # You can change this to any folder on your system
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 app = Flask(__name__)
+idx = read_index(labels, pca_data, index_name)
 
 
 def allowed_file(filename):
@@ -26,7 +28,7 @@ def upload_image():
 
         if file and allowed_file(file.filename):
             # The image file seems valid! Detect faces and return the result.
-            return jsonify(closest_matches_rtree(file, K))
+            return jsonify(closest_matches_rtree(file, K, idx))
 
     # If no valid image file was uploaded, show the file upload form:
     return '''
