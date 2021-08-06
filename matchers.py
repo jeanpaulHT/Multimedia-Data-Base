@@ -4,7 +4,6 @@ from sklearn import decomposition
 
 import numpy as np
 import pandas as pd
-import os
 import heapq as hq
 
 
@@ -98,13 +97,6 @@ def closest_matches_rtree(file_stream, k, idx):
 def closest_matches_sequential(file_stream, k, idx):
     return filter_matches(file_stream, seq_knn_search, k, idx)
 
-
-
-
-
-
-# if __name__ == "__main__":
-#     app.run(host='0.0.0.0', port=5001, debug=True)
 
 
 if __name__ == '__main__':
