@@ -4,6 +4,7 @@ from rtree import index
 from os import listdir
 import pandas as pd
 import time
+import os
 
 
 from sklearn import decomposition
@@ -102,10 +103,9 @@ def build_index_and_get_pca(filename: str, index_name: str, n=None):
     pca = decomposition.PCA(0.90)
     fit_pca = pca.fit(data_matrix)    
 
-    print(fit_pca.components_.shape)
     pca_data = fit_pca.transform(data_matrix)
     
-    data_length = pca_data.shape[1] if n is None else n
+    data_length = pca_data.shape[0] if n is None else n
 
     p = index.Property()
     p.dimension = pca_data.shape[1]
@@ -119,14 +119,17 @@ def build_index_and_get_pca(filename: str, index_name: str, n=None):
             break
         bounding_box = np.concatenate([vector, vector])
         idx.insert(i, tuple(bounding_box), obj=path)
-
-    print(idx)
-    idx.close()
     
-    return fit_pca
+    return fit_pca, idx
 
 if __name__ == '__main__':
-    pca = build_index_and_get_pca('lfw.csv', 'indexes/index', 100)
+    index_name = 'indexes/index'
+    n = None
+    pca, idx = build_index_and_get_pca('lfw.csv', index_name, n)
+    idx.close()
+
+    os.remove(f"{index_name}_{n}.data")
+    os.remove(f"{index_name}_{n}.index")
 
 
 

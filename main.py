@@ -4,24 +4,21 @@ import face_recognition
 from index_generator import build_index_and_get_pca
 
 import numpy as np
+import os
 
 # app = Flask(__name__)
 
-index_path = 'indexes/index_100'
+index_path = 'indexes/index'
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 K = 8
-
-pca = build_index_and_get_pca('lfw.csv', index_path)
-
-p = index.Property()
-p.dimension = pca.components_.shape[0]
-p.dat_extension = 'data'
-p.idx_extension = 'index'
-
-idx = index.Index(index_path, properties=p, interleaved=True)
-
-
+n = None
+try:
+    os.remove(f"{index_path}_{n}.data")
+    os.remove(f"{index_path}_{n}.index")
+except Exception:
+    pass
+pca, idx = build_index_and_get_pca('lfw.csv', index_path)
 
 
 def allowed_file(filename):
@@ -65,12 +62,15 @@ def detect_faces_in_image(file_stream):
     unknown_face_encodings = face_recognition.face_encodings(img)
     reduced_face_encoding = pca.transform(unknown_face_encodings[0].reshape(1, -1))
 
-    print(reduced_face_encoding)
-    print(reduced_face_encoding.shape)
-    bounding_box = np.concatenate((reduced_face_encoding,reduced_face_encoding),axis=1)
+    size = reduced_face_encoding.shape[1]
+    bounding_box = np.concatenate((reduced_face_encoding, reduced_face_encoding),axis=1)
 
-    closest_matches = [n.object for n in idx.nearest(tuple(bounding_box[0]), K, objects=True)]
-    distances = face_recognition.face_distance(closest_matches, reduced_face_encoding)
+    closest_matches = list(idx.nearest(tuple(bounding_box[0]), K, objects=True))
+    paths = [i.object for i in closest_matches]
+    points = [i.bounds[:size] for i in closest_matches]
+
+    distances = face_recognition.face_distance(points, reduced_face_encoding)
+    print(distances)
 
 
     
@@ -86,8 +86,7 @@ def detect_faces_in_image(file_stream):
 
     # Return the result as json
     result = {
-        "best_matches": closest_matches,
-        "distances": distances
+        'matches': [{'path': file, 'distance': distance} for file, distance in zip(paths, distances)]
     }
     return result
 
@@ -97,4 +96,5 @@ def detect_faces_in_image(file_stream):
 
 
 if __name__ == '__main__':
-    print(detect_faces_in_image('./Paul-Henri_Mathieu_0003.jpg'))
+    import json
+    print(json.dumps(detect_faces_in_image('./Paul-Henri_Mathieu_0003.jpg'), indent=4))
