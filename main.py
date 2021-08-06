@@ -13,6 +13,7 @@ index_path = 'indexes/index'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 K = 8
 n = None
+
 try:
     os.remove(f"{index_path}_{n}.data")
     os.remove(f"{index_path}_{n}.index")
@@ -54,7 +55,7 @@ def allowed_file(filename):
 #     '''
 
 
-def detect_faces_in_image(file_stream):
+def closest_matches_knn(file_stream):
     # Load the uploaded image file
     img = face_recognition.load_image_file(file_stream)
     # Get face encodings for any faces in the uploaded image
@@ -72,21 +73,14 @@ def detect_faces_in_image(file_stream):
     distances = face_recognition.face_distance(points, reduced_face_encoding)
     print(distances)
 
-
-    
-    # if len(unknown_face_encodings) > 0:
-    #     face_found = True
-    #     # See if the first face in the uploaded image matches the known face of Obama
-        
-    #     match_results = face_recognition.compare_faces([known_face_encoding], reduced_face_encoding)
-    #     # Your can use the distance to return a ranking of faces <face, dist>. 
-    #     # face_recognition.face_distance([known_face_encoding], unknown_face_encodings[0])
-    #     if match_results[0]:
-    #         is_vizcarra = True
-
-    # Return the result as json
+    # hope this is enough
     result = {
-        'matches': [{'path': file, 'distance': distance} for file, distance in zip(paths, distances)]
+        'matches': [
+            {
+                'path': file, 
+                'distance': distance
+            } for file, distance in zip(paths, distances)
+        ]
     }
     return result
 
@@ -97,4 +91,4 @@ def detect_faces_in_image(file_stream):
 
 if __name__ == '__main__':
     import json
-    print(json.dumps(detect_faces_in_image('./Paul-Henri_Mathieu_0003.jpg'), indent=4))
+    print(json.dumps(closest_matches_knn('./Paul-Henri_Mathieu_0003.jpg'), indent=4))
