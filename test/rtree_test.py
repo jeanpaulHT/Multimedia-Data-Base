@@ -31,3 +31,5 @@ print("El vecino mas cercano de (3,3): ", lres)
 lres = list(idx.nearest(coordinates=q, num_results=2))
 print("Los dos vecinos mas cercano de (3,3): ", lres)
 
+
+
