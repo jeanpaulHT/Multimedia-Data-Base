@@ -74,7 +74,7 @@ El formato de retorno es el mismo que en el caso del KNN Search, por lo que pued
 # Análisis y discusión de la experimentación
 
 
-Aplicacacion el KNN-RTree y el KNN-secuencial haciendo crecer el tamaño de la colección (N) para comparar la eficiencia en tiempos de ejecución en segundos:
+Aplicacacion el KNN-RTree y el KNN-secuencial haciendo crecer el tamaño de la colección (N) para comparar la eficiencia en tiempos de ejecución en segundos (10 iteraciones):
 
 | Tiempo|      KNN-RTree|  KNN-Secuencial|
 |----------|:-------------:|------:|
