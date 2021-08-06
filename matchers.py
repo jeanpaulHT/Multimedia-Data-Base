@@ -4,6 +4,7 @@ from sklearn import decomposition
 
 import numpy as np
 import pandas as pd
+import os
 import heapq as hq
 
 
@@ -68,8 +69,8 @@ def rtree_knn_search(encoding, k, idx):
 
     closest_matches = (idx.nearest(tuple(bounding_box[0]), k, objects=True))
 
-    results = ((i.object, pca_data[i.id]) for i in closest_matches)
-    paths, points = zip(*results)
+    paths = [i.object for i in closest_matches]
+    points = [pca_data[i.id] for i in closest_matches]
 
     return paths, points
 
@@ -100,10 +101,18 @@ def closest_matches_sequential(file_stream, k, idx):
     return filter_matches(file_stream, seq_knn_search, k, idx)
 
 
+
+
+
+
+# if __name__ == "__main__":
+#     app.run(host='0.0.0.0', port=5001, debug=True)
+
+
 if __name__ == '__main__':
     import json
     print('reading index')
     idx = read_index(labels, pca_data, index_name)
     
-    test_file = './Paul-Henri_Mathieu_0003.jpg'
-    print(json.dumps(range_matches_search(test_file, 0.5, idx), indent=4))
+    print(json.dumps(
+        range_matches_search('./Paul-Henri_Mathieu_0003.jpg', 0.5, idx), indent=4))
