@@ -49,48 +49,6 @@ def create_csv_lfw  (n = 13234):
 
 
 
-def create_rtree_index_lfw  (n = 13234):
-    p = index.Property()
-    p.dimension = 128
-    p.dat_extension = 'data'
-    p.idx_extension = 'index'
-    idx = index.Index('rtree_index_lfw', properties=p)
-    i = 0
-    for dir in listdir('lfw/'):
-        print(f'direcory: {dir}')
-        dir_path = f'lfw/{dir}'
-        for img in listdir(dir_path):
-            img_path = f'lfw/{dir}/{img}'
-            print(f'{i} : {img_path}')
-            ef = encode_file(img_path)
-            if ef is not None:
-                idx.insert(i, tuple(ef))
-            i += 1
-
-        if( i > n):
-            break
-
-    idx.close()
-
-
-def create_rtree_index(n = 13234):
-    p = index.Property()
-    p.dimension = 128
-    p.dat_extension = 'data'
-    p.idx_extension = 'index'
-    idx = index.Index('rtree_index', properties=p)
-    i = 0
-    for img in listdir('test/fotos_bd/'):
-        print(i)
-        print(img)
-
-        ef = encode_file(f'test/fotos_bd/{img}')
-        if ef is not None:
-            idx.insert(i, tuple(ef) )
-        i += 1
-
-    idx.close()
-
 
 def build_index(labels, pca_data, index_name: str, n=None):
     data_length = pca_data.shape[0] if n is None else n
