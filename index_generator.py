@@ -48,6 +48,8 @@ def create_csv_lfw  (n = 13234):
     df.to_csv("lfw.csv")
 
 
+
+
 def build_index(labels, pca_data, index_name: str, n=None):
     data_length = pca_data.shape[0] if n is None else n
 
