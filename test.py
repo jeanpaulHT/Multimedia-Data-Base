@@ -27,6 +27,12 @@ if __name__ == '__main__':
         range = timeit.timeit(lambda: closest_matches_sequential(test_image, K, idx), number=10)
         print(f'{range=}')
 
-        
+    for n in test_size:
+        try:
+            os.remove(f"{index_name}_{n}.data")
+            os.remove(f"{index_name}_{n}.index")
+        except Exception:
+            pass
+
         
         

@@ -52,9 +52,13 @@ Estos nuevos vectores de imágenes que fueron reducidos luego son insertados al 
 
 # Algoritmo de búsqueda KNN
 
-El algoritmo de Knn tiene una implementación trivial. Debido a la librería `rtree` ,  usada para el R-tree contiene la función `nearest` la cual implementa la búsqueda por Knn.  Por defecto nuestra implementación tiene un k de 8.
+Se realizaron dos implementaciones para KNN de acuerdo a lo requerido. Estas consisten en una implementación por nearest neighbors de un RTree y un sequential scan. Por defecto nuestra implementación tiene un k de 8.
 
-Lo que retornamos con la función Knn es la coordenadas del vector/punto y su key (el path a la imagen).
+- **Utilizando RTrees:** El algoritmo de Knn tiene una implementación trivial. Debido a la librería `rtree` ,  usada para el R-tree contiene la función `nearest` la cual implementa la búsqueda por Knn.  
+
+- **Utiliando Sequential Scan:** Se utiliza un sequential scan con ayuda de un Max-Heap (implementado con `heapq`). Se agregan inicialmente los k primeros inputs a la heap. Tras ello, se siguen agregando todos los restantees, pero en cada iteración se remueve el máximo de la heap para mantener la invariante de k elementos.
+
+Lo que retornamos con la función Knn es una lista que contiene coordenadas del vector/punto y su key (el path a la imagen).
 
 
 
