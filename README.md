@@ -64,11 +64,9 @@ Lo que retornamos con la función Knn es una lista que contiene coordenadas del 
 
 # Algoritmo de búsqueda por Rango
 
-A comparación de la búsqueda Knn este no usa el índex del Rtree para poder encontrar los puntos mas cercanos.
+A comparación de la búsqueda Knn este no usa el índex del Rtree para poder encontrar los puntos mas cercanos. En cambio, utiliza la función `intersect` del index. Se coloca un bounding box desde (px_0 - d, px_1 - d, px_2 - d, ...) hasta (px_0 + d,  px_1 + d, px_2 + d, ...) y se filtran todos los posibles candidatos. Tras ello, se remueven todos aquellos puntos que estan en el bounding box, pero que no están dentro de la distancia d (es decir, todos los puntos fuera del hipercirculo que conforma el radio, pero dentro del hipercubo circunscrito a la misma).
 
-Luego recorre e inserta los puntos que estén dentro de la distancia propuesta, ordenándolo por esta con un heapify.
-
-Al igual que el Knn retorna  el punto/vector y el path a la imagen.
+El formato de retorno es el mismo que en el caso del KNN Search, por lo que pueden usarse intercambiablemente.
 
 
 
