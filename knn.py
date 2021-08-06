@@ -28,7 +28,7 @@ idx = read_index(labels, pca_data, index_name)
 
 
 
-def closest_matches(file_stream, knn_function, params):
+def filter_matches(file_stream, filter_function, params):
     img = face_recognition.load_image_file(file_stream)
     # Get face encodings for any faces in the uploaded image
 
@@ -37,7 +37,7 @@ def closest_matches(file_stream, knn_function, params):
 
     reduced_face_encoding = pca.transform(face_encoding)
 
-    paths, points = knn_function(reduced_face_encoding, params)
+    paths, points = filter_function(reduced_face_encoding, params)
 
     distances = face_recognition.face_distance(points, reduced_face_encoding)
     result = {
@@ -51,7 +51,7 @@ def closest_matches(file_stream, knn_function, params):
     result['matches'].sort(key=lambda x: x['distance'])
     return result
 
-def range_search(encoding, d):
+def range_filter(encoding, d):
     max_encoding = encoding + d
     min_encoding = encoding - d
 
@@ -95,14 +95,14 @@ def seq_knn_search(encoding, k):
     
     return paths, points
 
-def range_matches(file_stream, d):
-    return closest_matches(file_stream, range_search, d)
+def range_matches_search(file_stream, d):
+    return filter_matches(file_stream, range_filter, d)
 
 def closest_matches_rtree(file_stream, k):
-    return closest_matches(file_stream, rtree_knn_search, k)
+    return filter_matches(file_stream, rtree_knn_search, k)
 
 def closest_matches_sequential(file_stream, k):
-    return closest_matches(file_stream, seq_knn_search, k)
+    return filter_matches(file_stream, seq_knn_search, k)
 
 
 
@@ -148,4 +148,4 @@ def closest_matches_sequential(file_stream, k):
 if __name__ == '__main__':
     import json
     
-    print(json.dumps(range_matches('./Paul-Henri_Mathieu_0003.jpg', d=0.5), indent=4))
+    print(json.dumps(range_matches_search('./Paul-Henri_Mathieu_0003.jpg', d=0.5), indent=4))
