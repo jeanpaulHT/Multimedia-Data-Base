@@ -1,10 +1,14 @@
 from rtree import index
 from flask import Flask, jsonify, request, redirect
 import face_recognition
-from index_generator import build_index_and_get_pca
+from index_generator import build_index
+from sklearn import decomposition
 
 import numpy as np
+import pandas as pd
 import os
+import heapq as hq
+
 
 # app = Flask(__name__)
 
@@ -19,12 +23,82 @@ try:
     os.remove(f"{index_path}_{n}.index")
 except Exception:
     pass
-pca, idx = build_index_and_get_pca('lfw.csv', index_path)
 
 
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+index_name = 'indexes/index'
+data_file = 'lfw.csv'
+
+df = pd.read_csv(data_file)
+labels, data_matrix = df.iloc[:, :2].to_numpy(), df.iloc[:, 2:].to_numpy()
+
+pca = decomposition.PCA(0.90).fit(data_matrix)    
+pca_data = pca.transform(data_matrix)
+
+idx = build_index(labels, pca_data, index_name)
+
+
+def closest_matches(file_stream, knn_function):
+    img = face_recognition.load_image_file(file_stream)
+    # Get face encodings for any faces in the uploaded image
+
+    unknown_face_encodings = face_recognition.face_encodings(img)
+    face_encoding = unknown_face_encodings[0].reshape(1, -1)
+
+    reduced_face_encoding = pca.transform(face_encoding)
+
+    paths, points = knn_function(reduced_face_encoding)
+
+    distances = face_recognition.face_distance(points, reduced_face_encoding)
+    result = {
+        'matches': [
+            {
+                'path': file, 
+                'distance': distance
+            } for file, distance in zip(paths, distances)
+        ]
+    }
+    return result
+
+def rtree_knn_search(encoding):
+    bounding_box = np.concatenate((encoding, encoding),axis=1)
+
+    closest_matches = list(idx.nearest(tuple(bounding_box[0]), K, objects=True))
+
+    paths = [i.object for i in closest_matches]
+    points = [pca_data[i.id] for i in closest_matches]
+
+    return paths, points
+
+
+def seq_knn_search(encoding):
+    queue = []
+    distances = face_recognition.face_distance(pca_data, encoding)
+
+    iterator = zip(labels, pca_data, distances)
+    for (i, path), point, distance in iterator:
+        if not i < K:
+            break
+        hq.heappush(queue, (-distance, path, point))
+
+    for (_, path), point, distance in iterator:
+        hq.heappushpop(queue, (-distance, path, point))
+
+    _, paths, points = zip(*queue)
+    
+    return paths, points
+
+def closest_matches_rtree(file_stream):
+    return closest_matches(file_stream, rtree_knn_search)
+
+    
+def closest_matches_sequential(file_stream):
+    return closest_matches(file_stream, seq_knn_search)
+
+
+
+# def allowed_file(filename):
+#     return '.' in filename and \
+#            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 # @app.route('/', methods=['GET', 'POST'])
@@ -55,40 +129,13 @@ def allowed_file(filename):
 #     '''
 
 
-def closest_matches_knn(file_stream):
-    # Load the uploaded image file
-    img = face_recognition.load_image_file(file_stream)
-    # Get face encodings for any faces in the uploaded image
 
-    unknown_face_encodings = face_recognition.face_encodings(img)
-    reduced_face_encoding = pca.transform(unknown_face_encodings[0].reshape(1, -1))
-
-    size = reduced_face_encoding.shape[1]
-    bounding_box = np.concatenate((reduced_face_encoding, reduced_face_encoding),axis=1)
-
-    closest_matches = list(idx.nearest(tuple(bounding_box[0]), K, objects=True))
-    paths = [i.object for i in closest_matches]
-    points = [i.bounds[:size] for i in closest_matches]
-
-    distances = face_recognition.face_distance(points, reduced_face_encoding)
-    print(distances)
-
-    # hope this is enough
-    result = {
-        'matches': [
-            {
-                'path': file, 
-                'distance': distance
-            } for file, distance in zip(paths, distances)
-        ]
-    }
-    return result
 
 # if __name__ == "__main__":
 #     app.run(host='0.0.0.0', port=5001, debug=True)
 
 
-
 if __name__ == '__main__':
     import json
-    print(json.dumps(closest_matches_knn('./Paul-Henri_Mathieu_0003.jpg'), indent=4))
+    print('aaa')
+    print(json.dumps(closest_matches_rtree('./Paul-Henri_Mathieu_0003.jpg'), indent=4))

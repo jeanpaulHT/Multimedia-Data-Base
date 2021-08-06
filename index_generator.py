@@ -95,16 +95,7 @@ def create_rtree_index(n = 13234):
     idx.close()
 
 
-def build_index_and_get_pca(filename: str, index_name: str, n=None):
-    df = pd.read_csv(filename)
-    labels = df.iloc[:, :2].to_numpy()
-    data_matrix = df.iloc[:, 2:].to_numpy()
-    
-    pca = decomposition.PCA(0.90)
-    fit_pca = pca.fit(data_matrix)    
-
-    pca_data = fit_pca.transform(data_matrix)
-    
+def build_index(labels, pca_data, index_name: str, n=None):
     data_length = pca_data.shape[0] if n is None else n
 
     p = index.Property()
@@ -120,12 +111,21 @@ def build_index_and_get_pca(filename: str, index_name: str, n=None):
         bounding_box = np.concatenate([vector, vector])
         idx.insert(i, tuple(bounding_box), obj=path)
     
-    return fit_pca, idx
+    return idx
 
 if __name__ == '__main__':
     index_name = 'indexes/index'
     n = None
-    pca, idx = build_index_and_get_pca('lfw.csv', index_name, n)
+    
+    df = pd.read_csv('lfw.csv')
+
+    labels, data_matrix = df.iloc[:, :2].to_numpy(), df.iloc[:, 2:].to_numpy()
+    
+    pca = decomposition.PCA(0.90).fit(data_matrix)    
+    pca_data = pca.transform(data_matrix)
+    
+
+    idx = build_index(labels, pca_data, index_name, n)
     idx.close()
 
     os.remove(f"{index_name}_{n}.data")
