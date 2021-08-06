@@ -72,7 +72,7 @@ Al igual que el Knn retorna  el punto/vector y el path a la imagen.
 # Análisis y discusión de la experimentación
 
 
-Aplicacacion el KNN-RTree y el KNN-secuencial haciendo crecer el tamaño de la colección (N) para comparar la eficiencia en tiempos de ejecución:
+Aplicacacion el KNN-RTree y el KNN-secuencial haciendo crecer el tamaño de la colección (N) para comparar la eficiencia en tiempos de ejecución en segundos:
 
 | Tiempo|      KNN-RTree|  KNN-Secuencial|
 |----------|:-------------:|------:|
