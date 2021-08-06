@@ -1,4 +1,3 @@
-import face_recognition
 from flask import Flask, jsonify, request, redirect
 from matchers import K, closest_matches_rtree
 

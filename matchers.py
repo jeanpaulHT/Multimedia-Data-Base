@@ -4,7 +4,6 @@ from sklearn import decomposition
 
 import numpy as np
 import pandas as pd
-import os
 import heapq as hq
 
 
@@ -23,12 +22,8 @@ labels, data_matrix = df.iloc[:, :2].to_numpy(), df.iloc[:, 2:].to_numpy()
 pca = decomposition.PCA(0.90).fit(data_matrix)    
 pca_data = pca.transform(data_matrix)
 
-print('reading index')
-idx = read_index(labels, pca_data, index_name)
 
-
-
-def filter_matches(file_stream, filter_function, params):
+def filter_matches(file_stream, filter_function, params, idx):
     img = face_recognition.load_image_file(file_stream)
     # Get face encodings for any faces in the uploaded image
 
@@ -37,7 +32,7 @@ def filter_matches(file_stream, filter_function, params):
 
     reduced_face_encoding = pca.transform(face_encoding)
 
-    paths, points = filter_function(reduced_face_encoding, params)
+    paths, points = filter_function(reduced_face_encoding, params, idx)
 
     distances = face_recognition.face_distance(points, reduced_face_encoding)
     result = {
@@ -51,7 +46,7 @@ def filter_matches(file_stream, filter_function, params):
     result['matches'].sort(key=lambda x: x['distance'])
     return result
 
-def range_filter(encoding, d):
+def range_filter(encoding, d, idx):
     max_encoding = encoding + d
     min_encoding = encoding - d
 
@@ -68,17 +63,17 @@ def range_filter(encoding, d):
     paths, points = zip(*matches)
     return paths, points
 
-def rtree_knn_search(encoding, k):
+def rtree_knn_search(encoding, k, idx):
     bounding_box = np.concatenate((encoding, encoding),axis=1)
 
-    closest_matches = list(idx.nearest(tuple(bounding_box[0]), k, objects=True))
+    closest_matches = (idx.nearest(tuple(bounding_box[0]), k, objects=True))
 
-    paths = [i.object for i in closest_matches]
-    points = [pca_data[i.id] for i in closest_matches]
+    results = ((i.object, pca_data[i.id]) for i in closest_matches)
+    paths, points = zip(*results)
 
     return paths, points
 
-def seq_knn_search(encoding, k):
+def seq_knn_search(encoding, k, idx):
     queue = []
     distances = face_recognition.face_distance(pca_data, encoding)
 
@@ -95,57 +90,20 @@ def seq_knn_search(encoding, k):
     
     return paths, points
 
-def range_matches_search(file_stream, d):
-    return filter_matches(file_stream, range_filter, d)
+def range_matches_search(file_stream, d, idx):
+    return filter_matches(file_stream, range_filter, d, idx)
 
-def closest_matches_rtree(file_stream, k):
-    return filter_matches(file_stream, rtree_knn_search, k)
+def closest_matches_rtree(file_stream, k, idx):
+    return filter_matches(file_stream, rtree_knn_search, k, idx)
 
-def closest_matches_sequential(file_stream, k):
-    return filter_matches(file_stream, seq_knn_search, k)
-
-
-
-# def allowed_file(filename):
-#     return '.' in filename and \
-#            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
-# @app.route('/', methods=['GET', 'POST'])
-# def upload_image():
-#     # Check if a valid image file was uploaded
-#     if request.method == 'POST':
-#         if 'file' not in request.files:
-#             return redirect(request.url)
-
-#         file = request.files['file']
-
-#         if file.filename == '':
-#             return redirect(request.url)
-
-#         if file and allowed_file(file.filename):
-#             # The image file seems valid! Detect faces and return the result.
-#             return detect_faces_in_image(file)
-
-#     # If no valid image file was uploaded, show the file upload form:
-#     return '''
-#     <!doctype html>
-#     <title>Es la foto de Vizcarra?</title>
-#     <h1>Cargar una foto y ver si corresponde al presidente Vizcarra!</h1>
-#     <form method="POST" enctype="multipart/form-data">
-#       <input type="file" name="file">
-#       <input type="submit" value="Cargar">
-#     </form>
-#     '''
-
-
-
-
-# if __name__ == "__main__":
-#     app.run(host='0.0.0.0', port=5001, debug=True)
+def closest_matches_sequential(file_stream, k, idx):
+    return filter_matches(file_stream, seq_knn_search, k, idx)
 
 
 if __name__ == '__main__':
     import json
+    print('reading index')
+    idx = read_index(labels, pca_data, index_name)
     
-    print(json.dumps(range_matches_search('./Paul-Henri_Mathieu_0003.jpg', d=0.5), indent=4))
+    test_file = './Paul-Henri_Mathieu_0003.jpg'
+    print(json.dumps(range_matches_search(test_file, 0.5, idx), indent=4))
