@@ -6,10 +6,7 @@ import pandas as pd
 import time
 import os
 
-
 from sklearn import decomposition
-
-
 
 
 def encode_file(file):
@@ -111,6 +108,16 @@ def build_index(labels, pca_data, index_name: str, n=None):
         bounding_box = np.concatenate([vector, vector])
         idx.insert(i, tuple(bounding_box), obj=path)
     
+    return idx
+
+
+def read_index(_, pca_data, index_name: str, n=None):
+    p = index.Property()
+    p.dimension = pca_data.shape[1]
+    p.dat_extension = 'data'
+    p.idx_extension = 'index'
+
+    idx = index.Index(f"{index_name}_{n}", properties=p, interleaved=True)
     return idx
 
 if __name__ == '__main__':
