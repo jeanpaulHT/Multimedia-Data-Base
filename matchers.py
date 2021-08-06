@@ -65,9 +65,7 @@ def range_filter(encoding, d, idx):
     return paths, points
 
 def rtree_knn_search(encoding, k, idx):
-    bounding_box = np.concatenate((encoding, encoding),axis=1)
-
-    closest_matches = (idx.nearest(tuple(bounding_box[0]), k, objects=True))
+    closest_matches = list(idx.nearest((*encoding[0], *encoding[0]), k, objects=True))
 
     paths = [i.object for i in closest_matches]
     points = [pca_data[i.id] for i in closest_matches]
