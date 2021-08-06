@@ -93,9 +93,6 @@ if __name__ == '__main__':
     idx = build_index(labels, pca_data, index_name, n)
     idx.close()
 
-    os.remove(f"{index_name}_{n}.data")
-    os.remove(f"{index_name}_{n}.index")
-
 
 
 

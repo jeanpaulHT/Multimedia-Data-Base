@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request, redirect
+from flask.templating import render_template
 from matchers import *
 import os
 
@@ -31,15 +32,7 @@ def upload_image():
             return jsonify(closest_matches_rtree(file, K, idx))
 
     # If no valid image file was uploaded, show the file upload form:
-    return '''
-    <!doctype html>
-    <title>Es la foto de Vizcarra?</title>
-    <h1>Cargar una foto y ver si corresponde al presidente Vizcarra!</h1>
-    <form method="POST" enctype="multipart/form-data">
-      <input type="file" name="file">
-      <input type="submit" value="Cargar">
-    </form>
-    '''
+    return render_template('index.html')
 
 
 
