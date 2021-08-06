@@ -5,21 +5,21 @@ from os import listdir
 import pandas as pd
 import time
 
+from sklearn import decomposition
+
 
 
 def encode_file(file):
-    global known_face_encoding
     faces_vect = face_recognition.load_image_file(file)
 
     try:
         known_face_encoding = face_recognition.face_encodings(faces_vect)[0]
-        # print(known_face_encoding)
-        # print(len(known_face_encoding))
+        return known_face_encoding
+
     except IndexError as e:
         print(e, "face was not recognized")
         return  None
 
-    return known_face_encoding
 
 def create_csv_lfw  (n = 13234):
     dimension = 128
@@ -92,9 +92,33 @@ def create_rtree_index(n = 13234):
     idx.close()
 
 
-if __name__ == '__main__':
-    start = time.time()
-    create_csv_lfw()
-    end = time.time()
+def create_optimized_rtree_from_csv(filename: str):
+    df = pd.read_csv(filename)
+    labels = df.iloc[:, :2].to_numpy()
+    data_matrix = df.iloc[:, 2:].to_numpy()
+    
+    pca = decomposition.PCA(0.90)
+    pca_data = pca.fit_transform(data_matrix)
 
-    print(end - start)
+    p = index.Property()
+    p.dimension = pca_data.shape[1]
+    p.dat_extension = 'data'
+    p.idx_extension = 'index'
+
+    idx = index.Index('opt_index', properties=p, interleaved=True)
+    for (i, path), vector in zip(labels, pca_data):
+        bounding_box = np.concatenate([vector, vector])
+        idx.insert(i, tuple(bounding_box), obj=path)
+
+    idx.close()
+
+if __name__ == '__main__':
+    create_optimized_rtree_from_csv('lfw.csv')
+
+
+# if __name__ == '__main__':
+#     start = time.time()
+#     create_csv_lfw()
+#     end = time.time()
+
+#     print(end - start)
