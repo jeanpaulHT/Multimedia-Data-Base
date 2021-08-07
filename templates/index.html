@@ -1,4 +1,4 @@
-
+<!-- 
 <!doctype html>
 <html lang="en">
   <head>
@@ -113,10 +113,11 @@
                 <div class="container">
                   <div class="row">
                     <div class="col-sm">
+                      <img id=preview>
                       <img id=mainresult />
                 </div></div></div>
             </div>
-              
+            <button type="submit" id="startSearch" class="btn btn-success btn-block">Realizar Búsqueda</button>
           </div>
         </div>
 
@@ -128,27 +129,44 @@
     </div>     
 
     <script type="text/javascript">
-        // var dir = document.getElementById("imgquery");
-        // var image = dir.nodeValue;
-        // dir = dir + '';
-        // console.log(dir);
-        // var name = dir.split('/').pop().replace("_"," ").split('.')[0];
-        // console.log(name);
-        // var div = document.createElement('div');
-        // div.setAttribute('class', 'gallery');
-        // var a = document.createElement('a');
-        // a.setAttribute('target', 'blank');
-        // a.setAttribute('href', dir); 
-        // var imgg = document.createElement('img');
-        // img.setAttribute('src', dir);
-        // img.setAttribute('width', '1000');
-        // img.setAttribute('height', '1000');
-        // a.appendChild(img);
-        // div.appendChild(a);
-        // var desc = document.createElement('div');
-        // desc.setAttribute('class','desc');
-        // desc.innerHTML= name;
-        // div.appendChild(desc);
-        // document.getElementById('mainresult').appendChild(div); 
+      function loadResults(response) {
+    image_list = response;
+    for (i = 0; i < image_list.length; i++) {
+      var name = image_list[i].split('/').pop.replace("_", " ").split('.')[0]
+      var div = document.createElement('div');
+      div.setAttribute('class', 'gallery');
+
+      var a = document.createElement('a');
+      a.setAttribute('target', 'blank');
+      a.setAttribute('href', image_list[i]);
+      
+      var img = document.createElement('img');
+      img.setAttribute('src', image_list[i]);
+      img.setAttribute('height', '600');
+      
+      a.appendChild(img);
+      div.appendChild(a);
+      
+      var desc = document.createElement('div');
+      desc.setAttribute('class', 'desc');
+      desc.innerHTML = name;
+
+      div.appendChild(desc);
+
+      $("image_results").append(div);
+    }
+  }
+
+  function loadImage(input) {
+    if (input.files && input.files[0]) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        $('#preview')
+          .attr('src', e.target.result)
+          .attr('height', '400');
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
     </script>
-  </body>
+  </body> -->
