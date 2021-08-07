@@ -34,6 +34,28 @@ def query():
               image_list = json.dumps(closest_matches_rtree(file, K, idx))
               to_render = '''
               <!doctype html>
+                            <style>
+                  div.gallery {
+                      margin: 5px;
+                      border: 1px solid #ccc;
+                      float: left;
+                      width: 180px;
+                  }
+
+                  div.gallery:hover {
+                      border: 1px solid #777;
+                  }
+
+                  div.gallery img {
+                      width: 100%;
+                      height: auto;
+                  }
+
+                  div.desc {
+                      padding: 15px;
+                      text-align: center;
+                  }
+              </style>
               <title>Image search</title>
               <h1>Encuentre rostos similares a su imagen.</h1>
               <form method="POST" enctype="multipart/form-data">
@@ -46,15 +68,27 @@ def query():
               for image in image_list['matches']:
                 image['path'] = 'static/' + image['path']
                 print (image['path'])
-                to_add = "<img src ='"
+                to_add = "<div class='gallery'> <img src ='"
                 to_add += str(image['path'])
-                to_add += "'>"
+                to_add += "'>" 
+                to_add += "<div class='desc'><p>"
+                to_add += os.path.splitext(os.path.basename(image['path']))[0]
+                to_add += "</p></div></div>"
                 to_render += to_add
               to_render += "</div>"
               #return jsonify(closest_matches_rtree(file, K, idx))
               return to_render
             except IndexError as e:
-              return jsonify({ 'matches': [] })
+              return '''
+       <!doctype html>
+    <title>Image search</title>
+    <h1>Encuentre rostos similares a su imagen.</h1>
+    <form method="POST" enctype="multipart/form-data">
+      <input type="file" name="file" accept="image/* onchange="loadImage(this)">
+      <input type="submit" value="Cargar">
+      <p>Index error</p>
+    </form>
+    '''
 
     # If no valid image file was uploaded, show the file upload form:
     return '''
