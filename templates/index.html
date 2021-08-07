@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
-    <script src="match.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/match.js"></script>
     <style>
         div.gallery {
           margin: 5px;
@@ -82,7 +83,7 @@
 
 <body>
 
-<div class="container-fluid">
+  <div class="container-fluid">
     <div class="container">
         <div class="row">
           <div class="col-sm">
@@ -90,10 +91,10 @@
               
                 <div style="background:transparent !important" class="jumbotron">
                   <h1 class="display-4">Face Recognition</h1>
-                  <p class="lead">Encuentra rostros similares.</p>
+                  <p class="lead">Encuentre rostos similares a su imagen.</p>
                   
                   <hr class="my-4" >
-                  <p> Para comenzar, adjunte una imagen con un rostro visible.
+                  <p> Adjunte una imagen con un rostro visible.
                   <p class="lead">
                       <form method=POST enctype=multipart/form-data>
                       <div class="wrapper">
@@ -101,21 +102,19 @@
                             <input type="file" name=file />                          
                           <i class="fa fa-arrow-up"></i>
                       </div>
-                      <input type=submit value=Upload>
+                      <input type="file" type="submit" accept="image/*" name="image" id="imgquery" onchange="loadImage(this)">
                       </form>
                       <small id="HelpBlock" class="form-text text-muted">
-                          sube o arrastra una imagen para analizar su rostro
+                          Suba o arrastre una imagen
                       </small>
                   </p>
                 </div>
                 <hr class="my-4">
                 <div class="container">
                   <div class="row">
-                    <div class="col-sm"id=mainresult>
+                    <div class="col-sm">
+                      <img id=mainresult />
                 </div></div></div>
-              <form action="/query" method="POST">
-                    <button type="submit" id="startSearch" class="btn btn-success btn-block">Realizar Búsqueda</button>
-              </form>
             </div>
               
           </div>
@@ -126,52 +125,30 @@
         </div>
       </div>
     
-    </div>      
+    </div>     
 
-    <script type="text/javascript"> 
-        var files = '';
-        for(i in files){
-            console.log(files[i]);
-            var dir = files[i];
-            var name = dir.split('/').pop().replace("_"," ").split('.')[0];
-            console.log(name);
-            var div = document.createElement('div');
-            div.setAttribute('class', 'gallery');
-            var a = document.createElement('a');
-            a.setAttribute('target', 'blank');
-            a.setAttribute('href', dir);
-            var b = document.createElement('img');
-            b.setAttribute('src', dir);
-            b.setAttribute('width', '600');
-            b.setAttribute('height', '600');
-            a.appendChild(b);
-            div.appendChild(a);
-            var c = document.createElement('div');
-            c.setAttribute('class','desc');
-            c.innerHTML= name;
-            div.appendChild(c);
-            document.getElementById('image_results').appendChild(div); 
-        }
-        if (main_img){
-          var dir = main_img;
-          var name = dir.split('/').pop().replace("_"," ").split('.')[0];
-          console.log(name);
-          var div = document.createElement('div');
-          div.setAttribute('class', 'gallery');
-          var a = document.createElement('a');
-          a.setAttribute('target', 'blank');
-          a.setAttribute('href', dir);
-          var b = document.createElement('img');
-          b.setAttribute('src', dir);
-          b.setAttribute('width', '1000');
-          b.setAttribute('height', '1000');
-          a.appendChild(b);
-          div.appendChild(a);
-          var c = document.createElement('div');
-          c.setAttribute('class','desc');
-          c.innerHTML= name;
-          div.appendChild(c);
-          document.getElementById('mainresult').appendChild(div);       
-        }
-      </script>
+    <script type="text/javascript">
+        // var dir = document.getElementById("imgquery");
+        // var image = dir.nodeValue;
+        // dir = dir + '';
+        // console.log(dir);
+        // var name = dir.split('/').pop().replace("_"," ").split('.')[0];
+        // console.log(name);
+        // var div = document.createElement('div');
+        // div.setAttribute('class', 'gallery');
+        // var a = document.createElement('a');
+        // a.setAttribute('target', 'blank');
+        // a.setAttribute('href', dir); 
+        // var imgg = document.createElement('img');
+        // img.setAttribute('src', dir);
+        // img.setAttribute('width', '1000');
+        // img.setAttribute('height', '1000');
+        // a.appendChild(img);
+        // div.appendChild(a);
+        // var desc = document.createElement('div');
+        // desc.setAttribute('class','desc');
+        // desc.innerHTML= name;
+        // div.appendChild(desc);
+        // document.getElementById('mainresult').appendChild(div); 
+    </script>
   </body>
