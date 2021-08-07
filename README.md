@@ -1,7 +1,5 @@
 
-
-
-# Text-Retrieval
+# Multimedia-Data-Base
 literalmente el tercer proyecto de bede-II
 
 ## Integrantes
@@ -12,7 +10,7 @@ literalmente el tercer proyecto de bede-II
 
 ## Descripción
 
-El objetivo del proyecto será la implementación de un buscador de imágenes usando la estructura de R-tree. La colección de imágenes usadas fueron sacadas de    [Labeled Faces in the Wild](http://vis-www.cs.umass.edu/lfw/) : una coleccion de mas de 13 mil imágenes para propósitos de desarrollo de software.
+El objetivo del proyecto será la implementación de un buscador de imágenes usando la estructura de R-tree. La colección de imágenes usadas fueron sacadas de    [Labeled Faces in the Wild](http://vis-www.cs.umass.edu/lfw/) : una colección de mas de 13 mil imágenes para propósitos de desarrollo de software.
 
 Para la búsqueda de estas imágenes se debe hacer uso las funciones knn  y búsqueda por rango para el R-tree.
 
@@ -31,11 +29,11 @@ Sin embargo todo este proceso es bastante lento como para ser calculado en run-t
 
 
 
-## preprocesamiento
+## Preprocesamiento
 
-Antes de crear el el index del R-tree primero debemos calcular los vectores característicos de la imagen. Lo cual es una operación pesada considerando que se tiene que hacer para 13 mil imágenes. Por lo hace necesario esta etapa de preprocesamiento.
+Antes de crear el ]index del R-tree primero debemos calcular los vectores característicos de la imagen. Lo cual es una operación pesada considerando que se tiene que hacer para 13 mil imágenes. Por lo hace necesario esta etapa de preprocesamiento.
 
-El procesamiento simplemente se calcula los vectores caracteristicos de la imagen. Estos luego son guardados para luego ser escritos en un archivo csv. Este proceso puede durar hasta `1 hora`. 
+El procesamiento simplemente se calcula los vectores característicos de la imagen. Estos luego son guardados para luego ser escritos en un archivo csv. Este proceso puede durar hasta `1 hora`. 
 
 Sin embargo la ventajas de no solo una lectura de un csv comparado con encodear las imágenes es abismal. Siendo necesario si queremos hacer el proceso aceptablemente rápido.
 
@@ -48,6 +46,11 @@ La manera de como construimos el índice es indicando el numero de imágenes que
 Para reducir la maldición de la dimensionalidad aplicamos pca decomposition dado por la librería de `sklearn`. Esta recibe por input los vectores característicos de la imagen, y reduce la cantidad de dimensiones. En nuestro caso se redujo las dimensiones para tener una precisión de 90%. Logrando reducir de 128 dimensiones originales a 49 dimensiones.
 
 Estos nuevos vectores de imágenes que fueron reducidos luego son insertados al índice. Teniendo guardando información útil, como el path de la imagen.
+
+
+#### diagrama:
+
+![diagrama de flujo](https://media.discordapp.net/attachments/840221207172350003/873360416842059816/Untitled_Diagram.png)
 
 
 # Algoritmo de búsqueda KNN
@@ -103,3 +106,4 @@ Aplicacacion el KNN-RTree y el KNN-secuencial haciendo crecer el tamaño de la c
 ## Pruebas de uso y presentación
 
 - [Vídeo del proyecto](https://drive.google.com/drive/folders/1vCWJYOEFpJduP1AZBpRjJouA5BNZIWBy?usp=sharing)
+
