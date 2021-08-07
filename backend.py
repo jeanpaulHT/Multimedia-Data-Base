@@ -56,14 +56,30 @@ def query():
                       text-align: center;
                   }
               </style>
+              <script type="text/javascript">
+              function loadImage(input) {
+                  if (input.files && input.files[0]) {
+                      var reader = new FileReader();
+                      reader.onload = function (e) {
+                          $('#preview')
+                              .attr('src', e.target.result)
+                              .attr('height', '400');
+                      };
+                      reader.readAsDataURL(input.files[0]);
+                  }
+              }
+              </script>
               <title>Image search</title>
               <h1>Encuentre rostos similares a su imagen.</h1>
               <form method="POST" enctype="multipart/form-data">
                 <input type="file" name="file" accept="image/* onchange="loadImage(this)">
                 <input type="submit" value="Cargar">
               </form>
-              <div class="col-sm" id="image_results">
               '''
+              to_render += "<div class='desc'><p> Resultados para: "
+              to_render += os.path.splitext(os.path.basename(file.filename))[0]
+              to_render += '<p></div>'
+              to_render += '<div class="col-sm" id="image_results">'
               image_list = json.loads(image_list)
               for image in image_list['matches']:
                 image['path'] = 'static/' + image['path']
@@ -86,7 +102,7 @@ def query():
     <form method="POST" enctype="multipart/form-data">
       <input type="file" name="file" accept="image/* onchange="loadImage(this)">
       <input type="submit" value="Cargar">
-      <p>Index error</p>
+      <p>No se pudo detectar la cara en la imagen</p>
     </form>
     '''
 
