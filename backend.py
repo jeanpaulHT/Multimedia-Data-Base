@@ -29,7 +29,10 @@ def query():
 
         if file and allowed_file(file.filename):
             # The image file seems valid! Detect faces and return the result.
-            return jsonify(closest_matches_rtree(file, K, idx))
+            try:
+                return jsonify(closest_matches_rtree(file, K, idx))
+            except IndexError as e:
+                return jsonify({ 'matches': [] })
 
     # If no valid image file was uploaded, show the file upload form:
     return '''
