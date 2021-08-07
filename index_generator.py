@@ -79,6 +79,9 @@ def read_index(_, pca_data, index_name: str, n=None):
     return idx
 
 if __name__ == '__main__':
+    from pathlib import Path
+    Path("indexes").mkdir(parents=True, exist_ok=True)
+
     index_name = 'indexes/index'
     n = None
     
@@ -96,7 +99,7 @@ if __name__ == '__main__':
 
 
 
-# if __name__ == '__main__':
+# if __name__ == '__main__':    
 #     start = time.time()
 #     create_csv_lfw()
 #     end = time.time()
