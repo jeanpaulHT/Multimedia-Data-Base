@@ -90,6 +90,7 @@ Aplicacacion el KNN-RTree y el KNN-secuencial haciendo crecer el tamaño de la c
 |6400      |  6.63         |    7.70   |
 |12800     |  7.30         |  8.72     |
 
+El script que se uso para este testeo se encuentra en `test.py`
 
 
 
